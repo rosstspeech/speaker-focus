@@ -216,7 +216,18 @@ function handleServerMessage(msg) {
             break;
 
         case "focus_updated":
-            // Server confirmed; UI already updated optimistically
+            console.log("[focus_updated]", msg);
+            state.focusedSpeaker = msg.focused_speaker ?? null;
+            refreshSpeakerCards();
+            refreshTranscriptDim();
+            if (state.focusedSpeaker) {
+                $btnClearFocus.style.display = "inline-flex";
+                $focusLabel.textContent = `Focused: ${state.focusedSpeaker}`;
+                $focusLabel.style.display = "inline";
+            } else {
+                $btnClearFocus.style.display = "none";
+                $focusLabel.style.display    = "none";
+            }
             break;
 
         case "error":

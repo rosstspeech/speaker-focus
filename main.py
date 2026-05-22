@@ -220,7 +220,7 @@ async def session_ws(websocket: WebSocket):
     speaker_word_counts: dict[str, int] = {}
     auto_focus_enabled: bool = True
 
-    WARMUP_WORDS = 15
+    WARMUP_WORDS = 5
     FOCUS_THRESHOLD = 0.60
     UNFOCUS_THRESHOLD = 0.40
 
@@ -230,7 +230,7 @@ async def session_ws(websocket: WebSocket):
         for n, ids in enrolled.items()
         if ids
     ]
-    config = VoiceAgentConfigPreset.CAPTIONS()
+    config = VoiceAgentConfigPreset.ADAPTIVE()
     if known:
         config.known_speakers = known
 
@@ -319,9 +319,6 @@ async def session_ws(websocket: WebSocket):
         if speaker:
             known_speakers.add(speaker)
         text = " ".join(t for t in texts if t)
-        if speaker and text:
-            speaker_word_counts[speaker] = speaker_word_counts.get(speaker, 0) + len(text.split())
-            _check_auto_focus()
         logger.info("SEGMENT [%s]: %s", speaker or "?", text)
         asyncio.create_task(send({
             "type": "segment",
@@ -359,6 +356,16 @@ async def session_ws(websocket: WebSocket):
             "type": "error",
             "message": str(getattr(msg, "message", msg)),
         }))
+
+    @client.on(AgentServerMessageType.SPEAKER_METRICS)
+    def on_speaker_metrics(msg):
+        speakers = msg.get("speakers", []) if isinstance(msg, dict) else getattr(msg, "speakers", [])
+        for spk in speakers:
+            spk_id = spk.get("speaker_id") if isinstance(spk, dict) else getattr(spk, "speaker_id", None)
+            count = spk.get("word_count", 0) if isinstance(spk, dict) else getattr(spk, "word_count", 0)
+            if spk_id and not spk_id.startswith("__"):
+                speaker_word_counts[spk_id] = count
+        _check_auto_focus()
 
     # ── Session loop ──────────────────────────────────────────────────────────
 
