@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speaker Focus</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+
+    <!-- ── Header ──────────────────────────────────────────────────────── -->
+    <header class="header">
+        <div class="header-left">
+            <h1 class="app-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+                Speaker Focus
+            </h1>
+            <div class="status" id="status">
+                <span class="status-dot"></span>
+                <span id="status-text">Ready</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="focus-badge" id="focus-label" style="display:none">Focused: —</span>
+            <button class="btn btn-secondary" id="btn-clear-focus" style="display:none">
+                Clear Focus
+            </button>
+            <button class="btn btn-icon" id="btn-clear-transcript" title="Clear transcript">
+                Clear log
+            </button>
+            <button class="btn btn-danger" id="btn-stop" disabled>Stop</button>
+            <button class="btn btn-primary" id="btn-start">Start Session</button>
+        </div>
+    </header>
+
+    <!-- ── Tab bar ──────────────────────────────────────────────────────── -->
+    <nav class="tab-bar">
+        <button class="tab active" data-tab="live">Live</button>
+        <button class="tab" data-tab="enroll">Enroll Speakers</button>
+    </nav>
+
+    <!-- ── Live tab ─────────────────────────────────────────────────────── -->
+    <main class="main" id="tab-live">
+
+        <!-- Speakers sidebar -->
+        <aside class="sidebar">
+            <div class="panel-header">
+                <h2>Speakers</h2>
+                <span class="hint">click to focus</span>
+            </div>
+            <div class="pre-focus-section" id="pre-focus-section" style="display:none">
+                <label class="field-label" for="pre-focus-select">Start focused on</label>
+                <select class="pre-focus-select" id="pre-focus-select">
+                    <option value="">— no pre-set focus —</option>
+                </select>
+            </div>
+            <div class="speaker-list" id="speaker-list">
+                <div class="empty-state" id="no-speakers">
+                    <p>No speakers detected yet.</p>
+                    <p class="hint">Start a session and speak.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Transcript -->
+        <section class="transcript-panel">
+            <div class="panel-header">
+                <h2>Transcript</h2>
+            </div>
+            <div class="transcript" id="transcript">
+                <div class="empty-state" id="no-transcript">
+                    <p>Transcript will appear here.</p>
+                    <p class="hint">Multiple speakers are automatically labelled.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ── Enroll tab ────────────────────────────────────────────────────── -->
+    <section class="enroll-panel" id="tab-enroll" style="display:none">
+
+        <!-- Enroll form -->
+        <div class="sidebar">
+            <div class="panel-header">
+                <h2>Enroll Speaker</h2>
+            </div>
+            <div class="enroll-form">
+                <p class="enroll-hint">Record a voice sample to automatically identify this speaker in Live sessions. Speak clearly for at least 5–10 seconds.</p>
+                <div class="field-group">
+                    <label class="field-label" for="enroll-name">Speaker name</label>
+                    <input class="field-input" id="enroll-name" type="text" placeholder="e.g. Alice" maxlength="50">
+                </div>
+                <div class="enroll-controls">
+                    <button class="btn btn-primary" id="btn-enroll-start">Start Recording</button>
+                    <button class="btn btn-danger" id="btn-enroll-stop" disabled>Stop &amp; Enroll</button>
+                </div>
+                <div class="enroll-status" id="enroll-status"></div>
+            </div>
+        </div>
+
+        <!-- Enrolled speakers list -->
+        <div class="enrolled-panel">
+            <div class="panel-header">
+                <h2>Enrolled Speakers</h2>
+                <span class="hint">used in Live sessions</span>
+            </div>
+            <div class="enrolled-list" id="enrolled-list">
+                <div class="empty-state" id="no-enrolled">
+                    <p>No speakers enrolled yet.</p>
+                    <p class="hint">Enroll a speaker to enable automatic identification.</p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>

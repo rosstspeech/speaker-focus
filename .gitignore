@@ -1,0 +1,5 @@
+venv
+.env
+enrolled_speakers.json
+.claude
+__pycache__
