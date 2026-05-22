@@ -248,12 +248,12 @@ async def session_ws(websocket: WebSocket):
         if speaker:
             focus_cfg = SpeakerFocusConfig(
                 focus_speakers=[speaker],
-                focus_mode=SpeakerFocusMode.IGNORE,
+                focus_mode=SpeakerFocusMode.RETAIN,
             )
         else:
             focus_cfg = SpeakerFocusConfig(
                 focus_speakers=sorted(known_speakers) or [""],
-                focus_mode=SpeakerFocusMode.IGNORE,
+                focus_mode=SpeakerFocusMode.RETAIN,
             )
         client.update_diarization_config(focus_cfg)
         logger.info("Focus updated → %s", speaker)

@@ -109,13 +109,15 @@ async function startSession() {
 }
 
 async function startAudioCapture() {
-    // Prefer a 16 kHz context; fall back to the browser default
+    state.capturing = true;  // set early — guard against re-entry before first await
+
     try {
         state.audioContext = new AudioContext({ sampleRate: 16000 });
     } catch {
         state.audioContext = new AudioContext();
     }
 
+    await state.audioContext.resume();
     await state.audioContext.audioWorklet.addModule("/static/audio-processor.js");
 
     const source = state.audioContext.createMediaStreamSource(state.mediaStream);
@@ -129,9 +131,7 @@ async function startAudioCapture() {
         }
     };
 
-    // Microphone → worklet (intentionally not connected to destination)
     source.connect(state.workletNode);
-    state.capturing = true;
 }
 
 function stopSession(closeWS = true) {
@@ -193,7 +193,10 @@ function handleServerMessage(msg) {
             setStatus("Live", "connected");
             $btnStop.disabled = false;
             $preFocusSection.style.display = "none";
-            if (!state.capturing) startAudioCapture();
+            if (!state.capturing) startAudioCapture().catch(err => {
+                console.error("Audio capture failed:", err);
+                setStatus("Mic error: " + err.message, "error");
+            });
             // Apply pre-set focus chosen before session started
             {
                 const preSelected = $preFocusSelect.value;
